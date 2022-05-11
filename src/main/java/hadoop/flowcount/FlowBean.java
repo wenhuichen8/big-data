@@ -54,11 +54,8 @@ public class FlowBean implements WritableComparable {
 
     @Override
     public String toString() {
-        return "FlowBean{" +
-                "upFlow=" + upFlow +
-                ", downFlow=" + downFlow +
-                ", sumFlow=" + sumFlow +
-                '}';
+       // return "FlowBean{" + "upFlow=" + upFlow + ", downFlow=" + downFlow + ", sumFlow=" + sumFlow + '}';
+        return  upFlow + " " + downFlow + " " + sumFlow;
     }
 
     public long getUpFlow() {

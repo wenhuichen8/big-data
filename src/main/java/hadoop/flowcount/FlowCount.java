@@ -47,12 +47,15 @@ public class FlowCount {
 
         Path inputPath = new Path(defInput);
         Path outputPath = new Path(defOutput);
-        if (args[0] != null) {
-            inputPath = new Path(args[0]);
+        if (args != null && args.length >= 2) {
+            if (args[0] != null) {
+                inputPath = new Path(args[0]);
+            }
+            if (args[1] != null) {
+                outputPath = new Path(args[1]);
+            }
         }
-        if (args[1] != null) {
-            outputPath = new Path(args[1]);
-        }
+
         FileSystem fs = FileSystem.get(config);
         if (fs.exists(outputPath)) {
             fs.delete(outputPath, true);
