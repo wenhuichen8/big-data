@@ -8,7 +8,7 @@ import org.apache.hadoop.hbase.client.Put;
 
 /**
  * Created by IntelliJ IDEA.
- * User: cwhtest
+ * User: chenwenhui
  * Date: 2022/5/13
  * Time: 22:28  xx f
  * java -classpath /usr/lib/hbase-current/lib/*.jar big-data.jar hbase.work.Week02
@@ -18,10 +18,10 @@ import org.apache.hadoop.hbase.client.Put;
 public class Week02 {
     public static void main(String[] args) throws Exception {
         Connection conn = HBaseUtil.getConnection();//获取连接
-        HBaseUtil.createNamespace(conn, "cwhtest");//创建命名空间
-        HBaseUtil.CreateTable(conn, "cwhtest:student", "info", "score");//创建表
+        HBaseUtil.createNamespace(conn, "chenwenhui");//创建命名空间
+        HBaseUtil.CreateTable(conn, "chenwenhui:student", "info", "score");//创建表
         //添加数据====================================================
-        HTable table = (HTable) conn.getTable(TableName.valueOf("cwhtest:student"));
+        HTable table = (HTable) conn.getTable(TableName.valueOf("chenwenhui:student"));
 
         Put put = new Put("Tom".getBytes());
         put.addColumn("info".getBytes(), "student_id".getBytes(), "20210000000001".getBytes());
@@ -51,7 +51,7 @@ public class Week02 {
         put4.addColumn("score".getBytes(), "programming".getBytes(), "61".getBytes());
         table.put(put4);
 
-        Put put5 = new Put("cwhtest".getBytes());
+        Put put5 = new Put("chenwenhui".getBytes());
         put5.addColumn("info".getBytes(), "student_id".getBytes(), "G20220735030012".getBytes());
         put5.addColumn("info".getBytes(), "class".getBytes(), "8".getBytes());
         put5.addColumn("score".getBytes(), "understanding".getBytes(), "99".getBytes());
@@ -65,13 +65,13 @@ public class Week02 {
         put6.addColumn("score".getBytes(), "programming".getBytes(), "100".getBytes());
         table.put(put6);
 
-        HBaseUtil.getTableByRowKey(conn, "cwhtest:student", "cwhtest");//查看一行数据
-        HBaseUtil.scanTable(conn, "cwhtest:student");//查看全部数据
+        HBaseUtil.getTableByRowKey(conn, "chenwenhui:student", "chenwenhui");//查看一行数据
+        HBaseUtil.scanTable(conn, "chenwenhui:student");//查看全部数据
 
-        HBaseUtil.deleteByRowKey(conn, "cwhtest:student", "test");//删除数据
-        HBaseUtil.scanTable(conn, "cwhtest:student");//查看全部数据
+        HBaseUtil.deleteByRowKey(conn, "chenwenhui:student", "test");//删除数据
+        HBaseUtil.scanTable(conn, "chenwenhui:student");//查看全部数据
 
-        HBaseUtil.deleteTable(conn, "cwhtest:student");//删除表
-        HBaseUtil.deleteNameSpace(conn, "cwhtest");//删除NameSpace
+        //HBaseUtil.deleteTable(conn, "chenwenhui:student");//删除表
+        //HBaseUtil.deleteNameSpace(conn, "chenwenhui");//删除NameSpace
     }
 }
