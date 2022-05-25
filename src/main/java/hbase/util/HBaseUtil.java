@@ -4,10 +4,13 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +20,8 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class HBaseUtil {
+    private static final Logger log = getLogger(HBaseUtil.class);
+
     /**
      * 获取连接
      *
@@ -24,7 +29,8 @@ public class HBaseUtil {
      */
     public static Connection getConnection() {
         // 建立连接
-        Configuration configuration = HBaseConfiguration.create();        ;
+        Configuration configuration = HBaseConfiguration.create();
+        ;
         configuration.set("hbase.zookeeper.quorum", "emr-worker-1,emr-worker-2,emr-header-1");
         //configuration.set("hbase.zookeeper.quorum", "192.168.33.100")
         configuration.set("hbase.zookeeper.property.clientPort", "2181");
@@ -53,7 +59,7 @@ public class HBaseUtil {
             TableName tableName = TableName.valueOf(tabName);
             // 建表
             if (admin.tableExists(tableName)) {
-                System.out.println("Table already exists");
+                log.info("table:{} already exists", tabName);
             } else {
                 TableDescriptorBuilder tableDb = TableDescriptorBuilder.newBuilder(tableName);
                 List<ColumnFamilyDescriptor> listColumnFamily = new ArrayList<>();
@@ -64,10 +70,11 @@ public class HBaseUtil {
                 tableDb.setColumnFamilies(listColumnFamily);
                 TableDescriptor tableDescriptor = tableDb.build();
                 admin.createTable(tableDescriptor);
-                System.out.println("Table create successful");
+                log.info("table:{} create successful", tabName);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("创建表失败：", e);
             return false;
         }
         return true;
@@ -85,8 +92,32 @@ public class HBaseUtil {
             //创建命名空间描述器
             NamespaceDescriptor namespaceDescriptor = NamespaceDescriptor.create(nameSpace).build();
             conn.getAdmin().createNamespace(namespaceDescriptor);
+            log.info("NameSpace:{} create successful", nameSpace);
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("创建命名空间：", e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 表格添加数据
+     * @param table
+     * @param rowKey
+     * @param colFamily
+     * @param colKey
+     * @param colvalue
+     * @return
+     */
+    public static boolean putData(HTable table,String rowKey,String colFamily,String colKey,String colvalue) {
+        try {
+            Put put = new Put(rowKey.getBytes());
+            put.addColumn(colFamily.getBytes(), colKey.getBytes(), colvalue.getBytes());
+            table.put(put);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("表格添加数据失败：", e);
             return false;
         }
         return true;
@@ -109,17 +140,18 @@ public class HBaseUtil {
                 String colName;
                 String value;
                 String family;
-                System.out.println("======rowKey:" + rowKey + "=========================");
+                log.info("======================rowkey:{}==================", rowKey);
                 for (Cell cell : result.rawCells()) {
                     colName = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(), cell.getQualifierLength());
                     value = Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());
                     family = Bytes.toString(CellUtil.cloneFamily(cell));
-                    System.out.println("Data get success, family:" + family + ", colName: " + colName + ", value: " + value);
+                    log.info("Data get success, family:{}, colName:{}, value:{}", family, colName, value);
                 }
-                System.out.println("==================================================");
+                log.info("=============================================");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("查询数据失败：", e);
             return false;
         }
         return true;
@@ -139,13 +171,13 @@ public class HBaseUtil {
                     String family = Bytes.toString(CellUtil.cloneFamily(cell));//取到族列
                     String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));//取到修饰名
                     String value = Bytes.toString(CellUtil.cloneValue(cell));//取到值
-                    System.out.println(" ===> rowKey : " + rowKey + ", timestamp : " +
-                            timestamp + ", family : " + family + ", qualifier : " + qualifier + ", value : " + value);
+                    log.info(" ===> rowKey  family:{}, rowKey:{}, qualifier:{}, timestamp:{}, value:{}", family, rowKey, qualifier, timestamp, value);
                 }
 
             }
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("scanTable失败：", e);
             return false;
         }
         return true;
@@ -156,9 +188,10 @@ public class HBaseUtil {
             // 删除数据
             Delete delete = new Delete(Bytes.toBytes(rowKey));      // 指定rowKey
             conn.getTable(TableName.valueOf(tableName)).delete(delete);
-            System.out.println("Delete Success");
+            log.info("Table：{} Delete rowkey：{} Success",tableName,rowKey);
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("deleteByRowKey失败：", e);
             return false;
         }
         return true;
@@ -172,12 +205,13 @@ public class HBaseUtil {
             if (admin.tableExists(tableName)) {
                 admin.disableTable(tableName);
                 admin.deleteTable(tableName);
-                System.out.println("Table Delete Successful");
+                log.info("Table:{} Delete Successful",tableName);
             } else {
-                System.out.println("Table does not exist!");
+                log.info("Table:{} does not exist!",tableName);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("deleteTable：", e);
             return false;
         }
         return true;
@@ -187,7 +221,34 @@ public class HBaseUtil {
         try {
             Admin admin = conn.getAdmin();
             admin.deleteNamespace(nameSpance);
-            System.out.println("NameSpance:" + nameSpance + " Delete Successful");
+            log.info("NameSpance:{} Delete Successful",nameSpance);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("deleteNameSpace 失败：", e);
+            return false;
+        }
+        return true;
+    }
+
+    public static HTable addValTableDescriptor(Connection conn, String tableName) {
+        HTable table = null;
+        try {
+            table = (HTable) conn.getTable(TableName.valueOf(tableName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return table;
+    }
+
+
+    public static boolean close(Connection conn) {
+        try {
+            if (conn != null) {
+                if (conn.getAdmin() != null) {
+                    conn.getAdmin().close();
+                }
+                conn.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return false;

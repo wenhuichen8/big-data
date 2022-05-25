@@ -5,14 +5,17 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
-public class BaseTest {
+import static org.slf4j.LoggerFactory.getLogger;
 
+
+public class BaseTest {
+    private static final Logger log = getLogger(BaseTest.class);
 
     public static void main(String[] args) throws IOException {
-
         // 建立连接
         Configuration configuration = HBaseConfiguration.create();
         //configuration.set("hbase.zookeeper.quorum", "emr-worker-1,emr-worker-2,emr-header-1");
@@ -68,5 +71,6 @@ public class BaseTest {
         } else {
             System.out.println("Table does not exist!");
         }
+
     }
 }

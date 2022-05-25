@@ -4,7 +4,6 @@ import hbase.util.HBaseUtil;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,48 +21,35 @@ public class Week02 {
         HBaseUtil.CreateTable(conn, "chenwenhui:student", "info", "score");//创建表
         //添加数据====================================================
         HTable table = (HTable) conn.getTable(TableName.valueOf("chenwenhui:student"));
+        HBaseUtil.putData(table,"Tom","info","student_id","20210000000001");
+        HBaseUtil.putData(table,"Tom","info","class","1");
+        HBaseUtil.putData(table,"Tom","score","understanding","75");
+        HBaseUtil.putData(table,"Tom","score","programming","82");
 
-        Put put = new Put("Tom".getBytes());
-        put.addColumn("info".getBytes(), "student_id".getBytes(), "20210000000001".getBytes());
-        put.addColumn("info".getBytes(), "class".getBytes(), "1".getBytes());
-        put.addColumn("score".getBytes(), "understanding".getBytes(), "75".getBytes());
-        put.addColumn("score".getBytes(), "programming".getBytes(), "82".getBytes());
-        table.put(put);
+        HBaseUtil.putData(table,"Jerry","info","student_id","20210000000002");
+        HBaseUtil.putData(table,"Jerry","info","class","2");
+        HBaseUtil.putData(table,"Jerry","score","understanding","85");
+        HBaseUtil.putData(table,"Jerry","score","programming","67");
 
-        Put put2 = new Put("Jerry".getBytes());
-        put2.addColumn("info".getBytes(), "student_id".getBytes(), "20210000000002".getBytes());
-        put2.addColumn("info".getBytes(), "class".getBytes(), "2".getBytes());
-        put2.addColumn("score".getBytes(), "understanding".getBytes(), "85".getBytes());
-        put2.addColumn("score".getBytes(), "programming".getBytes(), "67".getBytes());
-        table.put(put2);
+        HBaseUtil.putData(table,"Jack","info","student_id","20210000000003");
+        HBaseUtil.putData(table,"Jack","info","class","2");
+        HBaseUtil.putData(table,"Jack","score","understanding","80");
+        HBaseUtil.putData(table,"Jack","score","programming","80");
 
-        Put put3 = new Put("Jack".getBytes());
-        put3.addColumn("info".getBytes(), "student_id".getBytes(), "20210000000003".getBytes());
-        put3.addColumn("info".getBytes(), "class".getBytes(), "2".getBytes());
-        put3.addColumn("score".getBytes(), "understanding".getBytes(), "80".getBytes());
-        put3.addColumn("score".getBytes(), "programming".getBytes(), "80".getBytes());
-        table.put(put3);
+        HBaseUtil.putData(table,"Rose","info","student_id","20210000000004");
+        HBaseUtil.putData(table,"Rose","info","class","2");
+        HBaseUtil.putData(table,"Rose","score","understanding","60");
+        HBaseUtil.putData(table,"Rose","score","programming","61");
 
-        Put put4 = new Put("Rose".getBytes());
-        put4.addColumn("info".getBytes(), "student_id".getBytes(), "20210000000004".getBytes());
-        put4.addColumn("info".getBytes(), "class".getBytes(), "2".getBytes());
-        put4.addColumn("score".getBytes(), "understanding".getBytes(), "60".getBytes());
-        put4.addColumn("score".getBytes(), "programming".getBytes(), "61".getBytes());
-        table.put(put4);
+        HBaseUtil.putData(table,"chenwenhui","info","student_id","G20220735030012");
+        HBaseUtil.putData(table,"chenwenhui","info","class","9");
+        HBaseUtil.putData(table,"chenwenhui","score","understanding","99");
+        HBaseUtil.putData(table,"chenwenhui","score","programming","100");
 
-        Put put5 = new Put("chenwenhui".getBytes());
-        put5.addColumn("info".getBytes(), "student_id".getBytes(), "G20220735030012".getBytes());
-        put5.addColumn("info".getBytes(), "class".getBytes(), "8".getBytes());
-        put5.addColumn("score".getBytes(), "understanding".getBytes(), "99".getBytes());
-        put5.addColumn("score".getBytes(), "programming".getBytes(), "100".getBytes());
-        table.put(put5);
-
-        Put put6 = new Put("test".getBytes());
-        put6.addColumn("info".getBytes(), "student_id".getBytes(), "Test00000000001".getBytes());
-        put6.addColumn("info".getBytes(), "class".getBytes(), "8".getBytes());
-        put6.addColumn("score".getBytes(), "understanding".getBytes(), "99".getBytes());
-        put6.addColumn("score".getBytes(), "programming".getBytes(), "100".getBytes());
-        table.put(put6);
+        HBaseUtil.putData(table,"test","info","student_id","Test00000000001");
+        HBaseUtil.putData(table,"test","info","class","8");
+        HBaseUtil.putData(table,"test","score","understanding","88");
+        HBaseUtil.putData(table,"test","score","programming","98");
 
         HBaseUtil.getTableByRowKey(conn, "chenwenhui:student", "chenwenhui");//查看一行数据
         HBaseUtil.scanTable(conn, "chenwenhui:student");//查看全部数据
@@ -71,7 +57,8 @@ public class Week02 {
         HBaseUtil.deleteByRowKey(conn, "chenwenhui:student", "test");//删除数据
         HBaseUtil.scanTable(conn, "chenwenhui:student");//查看全部数据
 
-        //HBaseUtil.deleteTable(conn, "chenwenhui:student");//删除表
-        //HBaseUtil.deleteNameSpace(conn, "chenwenhui");//删除NameSpace
+        HBaseUtil.deleteTable(conn, "chenwenhui:student");//删除表
+        HBaseUtil.deleteNameSpace(conn, "chenwenhui");//删除NameSpace
+        HBaseUtil.close(conn);
     }
 }
